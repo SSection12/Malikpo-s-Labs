@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malikpo's Labs - Free tools with No Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+        :root {
+            --bg-color: #0d1117;
+            --accent-color: #2c5282;
+            --text-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            background-image: radial-gradient(at 0% 0%, rgba(44, 82, 130, 0.2) 0%, transparent 50%),
+                              radial-gradient(at 100% 100%, rgba(44, 82, 130, 0.15) 0%, transparent 50%);
+            min-height: 100vh;
+        }
+
+        .frosted-glass {
+            background-color: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(8px) saturate(180%);
+            -webkit-backdrop-filter: blur(8px) saturate(180%);
+            border: 1px solid rgba(44, 82, 130, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), 0 0 15px var(--accent-color);
+        }
+
+        .category-button.active {
+            background-color: var(--accent-color);
+            color: white;
+            box-shadow: 0 0 10px rgba(44, 82, 130, 0.7);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center py-10 mb-8">
+            <h1 class="text-5xl font-extrabold tracking-tight text-white mb-2">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-500">
+                    Malikpo's Labs
+                </span>
+            </h1>
+            <p class="text-xl text-gray-400 mb-8">Precision utilities. Zero bloat. No login, ever.</p>
+
+            <div class="max-w-2xl mx-auto frosted-glass rounded-xl shadow-2xl p-4">
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Search for a tool (e.g., 'JSON Formatter', 'Unit Converter')..."
+                    class="w-full p-4 rounded-lg bg-transparent border-2 border-blue-600 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-white placeholder-gray-400 outline-none transition duration-150"
+                    onkeyup="filterTools()"
+                />
+            </div>
+        </header>
+
+        <a id="featured-link" href="https://ssection12.github.io/SSection" target="_blank" class="block mb-8 mx-auto max-w-4xl frosted-glass rounded-xl p-3 shadow-lg hover:shadow-blue-500/50 transition duration-300 group">
+            <div class="flex items-center justify-center space-x-4">
+                <img id="featured-icon" 
+                     src="https://files.catbox.moe/wn201c.png" 
+                     alt="Featured Icon" 
+                     class="w-8 h-8 rounded-full object-cover group-hover:scale-110 transition duration-300">
+                <span class="text-lg font-semibold text-white group-hover:text-blue-300 transition duration-300">
+                    Contact Me
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link text-blue-400 group-hover:text-white"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+            </div>
+        </a>
+
+        <div id="categories-container" class="flex flex-wrap justify-center gap-3 mb-10 p-4 frosted-glass rounded-xl shadow-2xl">
+            <button onclick="filterTools('All')" class="category-button active px-4 py-2 text-sm font-semibold rounded-full bg-blue-800/40 hover:bg-blue-600/70 transition duration-200">
+                All Tools
+            </button>
+        </div>
+
+        <main id="tools-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        </main>
+    </div>
+
+    <script>
+        const toolsData = [
+            { name: "Unit Converter", desc: "Convert instantly between length, weight, volume, and temperature units.", category: "Calculators", url: "#unit-converter", iconUrl: "https://placehold.co/48x48/2c5282/ffffff?text=123" },
+            //{ name: "Password Generator", desc: "Create cryptographically strong, random passwords using custom rules.", category: "Security", url: "#password-generator", iconUrl: "https://placehold.co/48x48/58508D/ffffff?text=Key" },
+            { name: "Color Picker & Validator", desc: "Extract, validate, and convert between HEX, RGB, HSL, and CMYK color codes.", category: "Design", url: "#color-picker", iconUrl: "https://placehold.co/48x48/FF6361/ffffff?text=RGB" },
+            //{ name: "Markdown Previewer", desc: "Real-time preview and editing environment for Markdown syntax.", category: "Dev Tools", url: "#markdown-previewer", iconUrl: "https://placehold.co/48x48/663399/ffffff?text=MD" },
+            //{ name: "JSON Formatter", desc: "Format, beautify, and validate unminified JSON data structures.", category: "Dev Tools", url: "#json-formatter", iconUrl: "https://placehold.co/48x48/4CAF50/ffffff?text={}" },
+            //{ name: "Time Zone Converter", desc: "Check and convert times across different global zones instantly.", category: "Productivity", url: "#timezone-converter", iconUrl: "https://placehold.co/48x48/FFC300/ffffff?text=Clock" },
+            //{ name: "Base64 Utility", desc: "Encode text/files to Base64 and decode Base64 strings back to data.", category: "Dev Tools", url: "#base64-utility", iconUrl: "https://placehold.co/48x48/34495E/ffffff?text=B64" },
+            { name: "QR Code Generator & Scanner", desc: "Generate simple, customizable QR codes from text, URLs, or contact details.", category: "Design", url: "#qr-generator", iconUrl: "https://placehold.co/48x48/3498DB/ffffff?text=QR" },
+            //{ name: "Text Diff Checker", desc: "Compare two blocks of text to highlight additions, deletions, and changes.", category: "Dev Tools", url: "#diff-checker", iconUrl: "https://placehold.co/48x48/E74C3C/ffffff?text=Diff" },
+            //{ name: "UUID/GUID Generator", desc: "Generate Universally Unique Identifiers (UUIDs) on demand.", category: "Dev Tools", url: "#uuid-generator", iconUrl: "https://placehold.co/48x48/9B59B6/ffffff?text=ID" },
+            { name: "Random Picker", desc: "Pick a random winner or select a random item from a list.", category: "Productivity", url: "#random-picker", iconUrl: "https://placehold.co/48x48/F1C40F/ffffff?text=Rand" },
+            { name: "Simple Calculator", desc: "A clean, functional calculator for quick arithmetic operations.", category: "Calculators", url: "#calculator", iconUrl: "https://placehold.co/48x48/2ECC71/ffffff?text=Calc" },
+        ];
+
+        let activeCategory = 'All';
+
+        const toolsGrid = document.getElementById('tools-grid');
+        const searchInput = document.getElementById('search-input');
+        const categoriesContainer = document.getElementById('categories-container');
+
+        function getToolIconContent(tool) {
+            if (tool.iconUrl) {
+                return `
+                    <img src="${tool.iconUrl}" 
+                         alt="${tool.name} Icon" 
+                         class="w-8 h-8 object-contain"/>
+                `;
+            }
+            return `
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tool"><path d="m15 13-1.8-1.8a2 2 0 0 0-3 3L12 17"/><path d="m15 13 4-4"/><path d="m15 13-4 4"/><path d="m17 19 4-4"/><path d="m11 5 4 4"/></svg>
+            `;
+        }
+
+        function createToolCard(tool) {
+            const iconContent = getToolIconContent(tool);
+
+            return `
+                <a href="${tool.url}" class="tool-card block rounded-xl p-6 frosted-glass shadow-lg cursor-pointer transition duration-300 ease-in-out">
+                    <div class="flex items-center mb-3">
+                        <div class="p-3 rounded-full bg-blue-500/30 text-blue-300 mr-4 flex items-center justify-center w-12 h-12">
+                             ${iconContent}
+                        </div>
+                        <span class="text-sm font-medium text-gray-400 py-1 px-3 rounded-full border border-gray-600">${tool.category}</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-white mb-2">${tool.name}</h2>
+                    <p class="text-gray-400 text-sm">${tool.desc}</p>
+                    <div class="mt-4 text-blue-400 hover:text-blue-200 text-sm font-semibold transition duration-150 flex items-center">
+                        Launch Tool
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right ml-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </div>
+                </a>
+            `;
+        }
+
+        function renderTools(tools) {
+            toolsGrid.innerHTML = '';
+            if (tools.length === 0) {
+                toolsGrid.innerHTML = '<p class="col-span-full text-center text-gray-400 text-lg py-10">No tools found matching your criteria. Try a different search or category.</p>';
+                return;
+            }
+            tools.forEach(tool => {
+                toolsGrid.innerHTML += createToolCard(tool);
+            });
+        }
+
+        function filterTools(category = null) {
+            if (category) {
+                activeCategory = category;
+                document.querySelectorAll('.category-button').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.textContent.trim() === category || (category === 'All' && btn.textContent.trim() === 'All Tools')) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+
+            const query = searchInput.value.toLowerCase().trim();
+
+            const filtered = toolsData.filter(tool => {
+                const matchesCategory = activeCategory === 'All' || tool.category === activeCategory;
+                const matchesSearch = 
+                    tool.name.toLowerCase().includes(query) || 
+                    tool.desc.toLowerCase().includes(query) ||
+                    tool.category.toLowerCase().includes(query);
+
+                return matchesCategory && matchesSearch;
+            });
+
+            renderTools(filtered);
+        }
+
+        function initializeCategories() {
+            const categories = new Set(toolsData.map(tool => tool.category));
+            categories.forEach(category => {
+                const button = document.createElement('button');
+                button.textContent = category;
+                button.className = 'category-button px-4 py-2 text-sm font-semibold rounded-full bg-blue-800/40 text-gray-300 hover:bg-blue-600/70 transition duration-200';
+                button.onclick = () => filterTools(category);
+                categoriesContainer.appendChild(button);
+            });
+        }
+
+        window.onload = function() {
+            initializeCategories();
+            filterTools('All');
+        };
+    </script>
+</body>
+</html>
